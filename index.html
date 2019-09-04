@@ -1,0 +1,28 @@
+<audio src="data.mp3" controls id="audio"></audio>
+
+<script>
+  var audioEl = document.getElementById('audio')
+  audioEl.addEventListener('play', () => {
+    var context = new (window.AudioContext || window.webkitAudioContext)()
+    var analyser = context.createAnalyser()
+    // console.log(analyser)
+    // const source = audioCtx.createMediaStreamSource(audioEl.captureStream());
+    const source = context.createMediaElementSource(audioEl)
+    source.connect(analyser)
+    analyser.connect(context.destination)
+
+    analyser.fftSize = Math.pow(2, 12)
+    var bufferLength = analyser.frequencyBinCount
+    console.log(analyser)
+    var dataArray = new Uint8Array(bufferLength)
+
+    setInterval(() => {
+      analyser.getByteTimeDomainData(dataArray)
+      console.log((Math.max.apply(null, Array.from(dataArray)) / 128 - 1) * 100)
+    }, 50)
+
+    // analyser.connect(source);
+  })
+
+
+</script>
